@@ -16,7 +16,6 @@ exports.getUserById = (req,res,next,id)=>{
 
 ///***** Geting user by id *****//
 exports.getUser = (req,res)=>{
-    console.log(req.profile)
     const { _id, name, username, email, posts, description, joines, joined ,color} = req.profile
      
         return res.json({
@@ -68,7 +67,6 @@ exports.serchUser = (req,res)=>{
 
 //***** Updating user *******//
 exports.updateUser = (req,res)=>{
-    console.log(req.profile._id, req.body)
     const { color , name ,email ,username } = req.body
     User.findByIdAndUpdate(
         {_id : req.profile._id},
@@ -76,7 +74,6 @@ exports.updateUser = (req,res)=>{
         {new: true,useFindAndModify: false},
         (err, user)=>{
             if (err) {
-                console.log(err.keyValue)
                 if (err.keyValue.username) {
                     return res.status(400).json({
                         error : `${err.keyValue.username} is already exist`

@@ -38,7 +38,6 @@ exports.createPost = (req,res)=>{
     //saving Post
     newpost.save((err,post)=>{
         if (err) {
-            console.log(err)
             return res.json({
                 error : 'post not save in DB'
             })
@@ -153,7 +152,6 @@ exports.commentPost = (req,res)=>{
         if (req.body.comment.length < 1) {
             return res,json()
         }
-        console.log((req.body.comment))
         post.comments.comment.push({
             commentText : req.body.comment,
             username : _uid
@@ -161,7 +159,6 @@ exports.commentPost = (req,res)=>{
         post.comments.count = post.comments.count + 1
         post.save((err,post)=>{
             if (err) {
-                console.log(err)
                 return res.json({
                     error : 'Not able to Save Comment'
                 })
@@ -198,7 +195,6 @@ exports.checkPostLiked = (req,res)=>{
                 error : 'Not able to find Post'
             })
         }
-        console.log(post.likes.username.map((data)=> data == _uid)[0])
         if (post.likes.username.map((data)=> data == _uid)[0]) {
             res.json({
                 liked : true
