@@ -21,7 +21,7 @@ exports.getPostById = (req,res,next,id)=>{
 //CRUD controllers  
 ///****Creating Post --> C */
 exports.createPost = (req,res)=>{
-    const { post, color } = req.body
+    const { postTitle,post, color } = req.body
     const _id = req.profile._id
     //Cheaking POST
     if (!post) {
@@ -32,6 +32,7 @@ exports.createPost = (req,res)=>{
     //setting new POST
     const newpost = new Post({
         post,
+        postTitle ,
         author : _id,
         color
     })
@@ -195,7 +196,7 @@ exports.checkPostLiked = (req,res)=>{
                 error : 'Not able to find Post'
             })
         }
-        if (post.likes.username.map((data)=> data == _uid)[0]) {
+        if (post.likes.username.includes(_uid)) {
             res.json({
                 liked : true
             })
