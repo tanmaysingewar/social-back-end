@@ -131,3 +131,31 @@ exports.checkUsername = (req,res)=>{
         })
     })
 }
+
+exports.savePost = (req,res)=>{
+    const _pid = req.post._id
+    const _uid = req.profile._id
+    User.findById({ _id : _uid})
+    .exec((err, user)=>{
+        if (err) {
+            return res.status(400).json({
+                err : 'No user found!!',
+                error : err
+            })
+        }
+        user.saved.push(_pid)
+        user.save((err,user)=>{
+            if (err) {
+                return res.json({
+                    error : 'Not able to Save Comment'
+                })
+            }
+            return res.json({user})
+            })
+    })
+}
+
+exports.isPostSaved = (req,res)=>{
+    
+}
+

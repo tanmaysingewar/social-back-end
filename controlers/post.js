@@ -1,6 +1,3 @@
-const { json } = require('body-parser')
-const { stringify } = require('uuid')
-const post = require('../modals/post')
 const Post = require('../modals/post')//importing Post module
 
 //Param
@@ -151,7 +148,7 @@ exports.commentPost = (req,res)=>{
             })
         }
         if (req.body.comment.length < 1) {
-            return res,json()
+            return res.json()
         }
         post.comments.comment.push({
             commentText : req.body.comment,

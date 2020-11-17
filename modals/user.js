@@ -2,6 +2,7 @@ const mongoose = require('mongoose')
 const crypto = require('crypto');
 const { v4: uuidv4 } = require('uuid');
 const { Schema } = mongoose
+const { ObjectId } = mongoose.Schema
 
 const userSchema = new Schema({
     name:{
@@ -58,7 +59,11 @@ const userSchema = new Schema({
             trim: true,
             default :''
         }
-    }
+    },
+    saved : [{
+        type : ObjectId,
+        ref : 'Post'
+    }]
 },{
     timestamps :true
 })
