@@ -60,10 +60,12 @@ const userSchema = new Schema({
             default :''
         }
     },
-    saved : [{
+    saved:{
+        postId :[{
         type : ObjectId,
-        ref : 'Post'
-    }]
+        ref : 'Post',
+        required: true
+    }]}
 },{
     timestamps :true
 })

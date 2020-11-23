@@ -27,7 +27,7 @@ router.post('/user/check/username',checkUsername)
 router.post('/user/save/:postId/:userId',isSignedIn,isAuthenticated,savePost)
 
 //check is saved or not
-router.post('/user/save/:postId/:userId',isSignedIn,isAuthenticated,isPostSaved)
+router.post('/user/check/save/:postId/:userId',isSignedIn,isAuthenticated,isPostSaved)
 
 //Exporting router
 module.exports = router

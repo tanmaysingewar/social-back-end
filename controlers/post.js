@@ -1,4 +1,5 @@
 const Post = require('../modals/post')//importing Post module
+const User = require('../modals/user')//importing User module
 
 //Param
 //*** Getting Post and cheaking existance by id --->(Param) */
@@ -203,4 +204,62 @@ exports.checkPostLiked = (req,res)=>{
             })
         }
     })
+}
+
+exports.getCounts = (req,res)=>{
+    const _uid = req.profile._id
+    Post.find({author : _uid})
+    .exec((err, post)=>{
+        if (err) {
+            return res.json(400).json({
+                err: 'No posts found!!!'
+            })
+        }
+        let posts = post.length
+        User.findById({_id: _uid})
+        .exec((err, user)=>{
+            if (err) {
+                return res.json(400).json({
+                    err: 'No user found!!!'
+                })
+            }
+            let saved = user.saved.postId.length
+            let mentoins = 0
+            let all = posts + mentoins
+            res.json({
+                saved,
+                posts,
+                mentoins,
+                all
+            })
+        })
+    })
+}
+
+exports.getSavedPost = (req,res) =>{
+    const _uid = req.profile._id
+    User.findById({_id: _uid})
+    .populate({
+        path : 'saved.postId',
+        select : '-comments.comment -likes.username -__v',
+        populate : {
+            path : 'author',
+            select : 'username'
+        }
+    })
+        .exec((err, user)=>{
+            if (err) {
+                return res.json(400).json({
+                    err: 'No user found!!!'
+                })
+            }
+            const savedPost = user.saved.postId
+            savedPost.map(data =>{
+                let authorll = JSON.stringify(data.author)
+                authorll  = {username : 'tanmay'}
+            })
+            res.json({
+                savedPost
+            })
+        })
 }

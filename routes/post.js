@@ -2,7 +2,7 @@ const express = require('express')
 const { check } = require('express-validator')// Express validator 
 const { isSignedIn, isAuthenticated } = require('../controlers/auth')//Authincators
 const { getUserById } = require('../controlers/user')
-const { getPostById,createPost,getPost,removePost,getAllPost,likePost,commentPost , getPostByUserId, checkPostLiked} = require('../controlers/post')
+const { getPostById,createPost,getPost,removePost,getAllPost,likePost,commentPost,getCounts, getSavedPost , getPostByUserId, checkPostLiked} = require('../controlers/post')
 
 const router = express.Router()
 
@@ -42,6 +42,10 @@ router.post('/post/like/:postId/:userId',isSignedIn,likePost)
 
 //Commenting Post Route
 router.post('/post/comment/:postId',isSignedIn,commentPost)
+
+router.post('/post/counts/:userId',isSignedIn,getCounts)
+
+router.post('/post/saved/:userId',isSignedIn,isAuthenticated,getSavedPost)
 
 
 //Exporting router

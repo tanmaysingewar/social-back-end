@@ -26,6 +26,7 @@ exports.getUser = (req,res)=>{
 //*****Serching User by text ******//
 //Searching Users conditionally --- First by username and then by name
 exports.serchUser = (req,res)=>{
+    console.log('serch routed heated')
     //Extracting serch term
     const search = req.params.serchTerm
     //Serching searchTerm in username
@@ -67,10 +68,10 @@ exports.serchUser = (req,res)=>{
 
 //***** Updating user *******//
 exports.updateUser = (req,res)=>{
-    const { color , name ,email ,username } = req.body
+    const { color , name ,email ,username,description } = req.body
     User.findByIdAndUpdate(
         {_id : req.profile._id},
-        {$set: { color , name ,email ,username }},
+        {$set: { color , name ,email ,username, description }},
         {new: true,useFindAndModify: false},
         (err, user)=>{
             if (err) {
@@ -135,6 +136,7 @@ exports.checkUsername = (req,res)=>{
 exports.savePost = (req,res)=>{
     const _pid = req.post._id
     const _uid = req.profile._id
+    const x = req.params.postId
     User.findById({ _id : _uid})
     .exec((err, user)=>{
         if (err) {
@@ -143,19 +145,50 @@ exports.savePost = (req,res)=>{
                 error : err
             })
         }
-        user.saved.push(_pid)
-        user.save((err,user)=>{
-            if (err) {
-                return res.json({
-                    error : 'Not able to Save Comment'
+        if (user.saved.postId.includes(_pid)) {
+            
+            user.saved.postId.remove(_pid)
+            user.save((err,user)=>{
+                if (err) {
+                    return res.json({
+                        error : 'Not able to Save Comment'
+                    })
+                }
+                return res.json({user})
                 })
-            }
-            return res.json({user})
-            })
+        }else{
+            user.saved.postId.push(_pid)
+            user.save((err,user)=>{
+                if (err) {
+                    return res.json({
+                        error : 'Not able to Save Comment'
+                    })
+                }
+                return res.json({user})
+                })
+        }
     })
 }
 
 exports.isPostSaved = (req,res)=>{
-    
+    const _pid = req.post._id
+    const _uid = req.profile._id
+    User.findById({ _id : _uid})
+    .exec((err, user)=>{
+        if (err) {
+            return res.status(400).json({
+                err : 'No user found!!',
+                error : err
+            })
+        }
+        if (user.saved.postId.includes(_pid)) {
+            res.json({
+                msg : 'saved'
+            })
+        }else{
+            res.json({
+                msg : 'unsaved'
+            })
+        }
+    })
 }
-
