@@ -32,7 +32,7 @@ app.use('/api',userRoutes)
 app.use('/api/',postRoutes)
 
 //Port
-const port = process.env.PORT || 8080
+const port = process.env.PORT || 8081
 
 //Running post
 app.listen(port, ()=>{

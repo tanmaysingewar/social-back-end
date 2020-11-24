@@ -12,7 +12,7 @@ const postScmema = new Schema({
     postTitle :{
         type: String,
         trim: true,
-        maxlength: 20
+        maxlength: 50
     },
     color:{
         textColor:{

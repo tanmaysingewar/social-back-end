@@ -216,22 +216,8 @@ exports.getCounts = (req,res)=>{
             })
         }
         let posts = post.length
-        User.findById({_id: _uid})
-        .exec((err, user)=>{
-            if (err) {
-                return res.json(400).json({
-                    err: 'No user found!!!'
-                })
-            }
-            let saved = user.saved.postId.length
-            let mentoins = 0
-            let all = posts + mentoins
-            res.json({
-                saved,
-                posts,
-                mentoins,
-                all
-            })
+        res.json({
+            posts
         })
     })
 }
