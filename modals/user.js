@@ -34,13 +34,27 @@ const userSchema = new Schema({
         required :true,
         unique : true
     },
-    joines:{
+    joines:{count :{
         type : Number,
         default : 0
     },
-    joined:{
+        userId : [{
+            type : ObjectId,
+            ref : 'User',
+            default : [],
+            trim : true
+        }]
+    },
+    joined:{count :{
         type : Number,
         default : 0
+    },
+        userId : [{
+            type : ObjectId,
+            ref : 'User',
+            default : [],
+            trim : true
+        }]
     },
     description:{
         type: String,

@@ -1,9 +1,10 @@
 const User = require('../modals/user')
-const mongoose = require('mongoose')
 
 //***** Parem controller *****/
 exports.getUserById = (req,res,next,id)=>{
-    User.findById(id).exec((err,user)=>{
+    User.findById(id)
+    .select('-joines.userId -joined.userId')
+    .exec((err,user)=>{
         if (err|| !user) {
             return res.status(400).json({
                 error: 'No user found in DB'
@@ -16,7 +17,7 @@ exports.getUserById = (req,res,next,id)=>{
 
 ///***** Geting user by id *****//
 exports.getUser = (req,res)=>{
-    const { _id, name, username, email, posts, description, joines, joined ,color} = req.profile
+    const { _id, name, username, email, posts, joines, joined , description,color} = req.profile
      
         return res.json({
             _id, name, username, email, description, posts, joines, joined , color
@@ -90,8 +91,8 @@ exports.updateUser = (req,res)=>{
                 })
             }
             //Extracting values from -->'user'
-            const { _id, name, username, email, posts, description, joines, joined} = user
-            res.json({_id, name, username, email, posts, description, joines, joined})
+            const { _id } = user
+            res.json({_id})
         }
     )
 }
@@ -105,8 +106,8 @@ exports.removeUser = (req,res)=>{
             })
         }
         //Extracting values from -->'user'
-        const { _id, name, username, email, posts, description, joines, joined} = user
-        return res.json({_id, name, username, email, description, posts, joines, joined})
+        const { _id} = user
+        return res.json({_id})
          
     }))
 }
