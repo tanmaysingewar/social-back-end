@@ -2,7 +2,7 @@ const express = require('express')
 const { isSignedIn, isAuthenticated } = require('../controlers/auth')
 const { getPostById } = require('../controlers/post')
 const router = express.Router()
-const {getUserById, getUser, updateUser,serchUser, removeUser,checkUsername,savePost,isPostSaved} =require('../controlers/user')
+const {getUserById, getUser, updateUser,serchUser, removeUser,isjoinUser,joinUser,checkUsername,savePost,isPostSaved} =require('../controlers/user')
 
 router.param('userId',getUserById)
 
@@ -28,6 +28,13 @@ router.post('/user/save/:postId/:userId',isSignedIn,isAuthenticated,savePost)
 
 //check is saved or not
 router.post('/user/check/save/:postId/:userId',isSignedIn,isAuthenticated,isPostSaved)
+
+//Join the user
+router.post('/user/join/:userId',isSignedIn,joinUser)
+
+//Is user is joined 
+router.post('/user/check/join/:userId',isSignedIn,isjoinUser)
+
 
 //Exporting router
 module.exports = router

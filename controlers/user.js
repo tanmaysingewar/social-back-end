@@ -1,4 +1,5 @@
 const User = require('../modals/user')
+const { use } = require('../routes/user')
 
 //***** Parem controller *****/
 exports.getUserById = (req,res,next,id)=>{
@@ -14,7 +15,6 @@ exports.getUserById = (req,res,next,id)=>{
         next()
     })
 }
-
 ///***** Geting user by id *****//
 exports.getUser = (req,res)=>{
     const { _id, name, username, email, posts, joines, joined , description,color} = req.profile
@@ -23,7 +23,6 @@ exports.getUser = (req,res)=>{
             _id, name, username, email, description, posts, joines, joined , color
         })
 }
-
 //*****Serching User by text ******//
 //Searching Users conditionally --- First by username and then by name
 exports.serchUser = (req,res)=>{
@@ -66,7 +65,6 @@ exports.serchUser = (req,res)=>{
         })
     })
 }
-
 //***** Updating user *******//
 exports.updateUser = (req,res)=>{
     const { color , name ,email ,username,description } = req.body
@@ -111,8 +109,6 @@ exports.removeUser = (req,res)=>{
          
     }))
 }
-
-
 ///*****Check usename avaliblit ********/
 exports.checkUsername = (req,res)=>{
     User.find({username : req.body.username})
@@ -133,7 +129,6 @@ exports.checkUsername = (req,res)=>{
         })
     })
 }
-
 exports.savePost = (req,res)=>{
     const _pid = req.post._id
     const _uid = req.profile._id
@@ -170,7 +165,6 @@ exports.savePost = (req,res)=>{
         }
     })
 }
-
 exports.isPostSaved = (req,res)=>{
     const _pid = req.post._id
     const _uid = req.profile._id
@@ -192,4 +186,114 @@ exports.isPostSaved = (req,res)=>{
             })
         }
     })
+}
+exports.joinUser = (req,res)=>{
+    const _juid = req.profile._id //userId where user want to join **** ---Host 
+    const _uid = req.auth._id //userId of user *** ---Bacteria
+
+    if(_uid == _juid){
+        return res.json({
+            msg : 'you cant join yourself'
+        })
+    }else{
+        console.log(_uid == _juid)
+        User.findById({_id : _juid})
+        .exec((err,user) =>{
+            if(err){
+                res.status(400).json({
+                    err : 'User Not found'
+                })
+            }
+            if(user.joined.userId.includes(_uid)){
+                user.joined.userId.splice(_uid)
+                user.joined.count = user.joined.count - 1 
+                user.save((err ,user)=>{
+                    if(err){
+                        return res.status(400).json({
+                              err : 'User cant saved'
+                          })
+                      }
+                      User.findById({_id : _uid})
+                      .exec((err,user)=>{
+                        if(err){
+                           return res.status(400).json({
+                                  err : 'User cant saved'
+                              })
+                          }
+                          user.joines.userId.splice(_juid)
+                          user.joines.count = user.joines.count - 1 
+                          user.save((err,user)=>{
+                            if(err){
+                               return res.status(400).json({
+                                      err : 'User cant saved'
+                                  })
+                              }
+                              res.json({
+                                msg : false
+                            })
+                          })
+                      }) 
+                })
+              
+            }else{
+                user.joined.userId.push(_uid)
+                user.joined.count = user.joined.count + 1 
+                user.save((err,user)=>{
+                if(err){
+                    return res.status(400).json({
+                        err : 'User cant saved'
+                    })
+                }
+                User.findById({_id : _uid})
+                .exec((err,user)=>{
+                  if(err){
+                     return res.status(400).json({
+                            err : 'User cant saved'
+                        })
+                    }
+                    user.joines.userId.push(_juid)
+                    user.joines.count = user.joines.count + 1 
+                    user.save((err,user)=>{
+                      if(err){
+                         return res.status(400).json({
+                                err : 'User cant saved'
+                            })
+                        }
+                        res.json({
+                            msg : true
+                        })
+                    })
+                }) 
+                
+            })
+        }   
+        })
+    }
+}
+
+exports.isjoinUser = (req,res)=>{
+    const _juid = req.profile._id //userId where user want to join **** ---Host 
+    const _uid = req.auth._id //userId of user *** ---Bacteria
+
+    User.findById({_id : _juid})
+        .exec((err,user) =>{
+            if(err){
+                res.status(400).json({
+                    err : 'User Not found'
+                })
+            }
+            
+            if(user.joined.userId.includes(_uid)){
+                res.json({
+                    msg : true
+                })
+              
+            }else{
+                
+            res.json({
+                msg : false
+            })
+            }
+            
+        })
 }
