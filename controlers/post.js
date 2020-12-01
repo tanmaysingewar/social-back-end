@@ -53,7 +53,7 @@ exports.getAllPost = (req,res)=>{
     let sortBy = req.query.sort ? req.query.sort : "_id"
     Post.find()
     .populate('author','_id name username')//populating User name username
-    .select('-updatedAt -__v')
+    .select('-updatedAt -__v -likes.username -comments.comment')
     .sort([[sortBy ,'desc']])
     .exec((err,post)=>{
         if (err) {
@@ -240,12 +240,46 @@ exports.getSavedPost = (req,res) =>{
                 })
             }
             const savedPost = user.saved.postId
-            savedPost.map(data =>{
-                let authorll = JSON.stringify(data.author)
-                authorll  = {username : 'tanmay'}
-            })
+            
             res.json({
                 savedPost
             })
         })
+}
+
+exports.getAllComments = (req,res)=>{
+    const _pid = req.post._id
+    console.log(_pid)
+    Post.findById({ _id : _pid})
+    .populate('comments.comment.username author', 'username _id')
+    .select('-likes.username -updatedAt -__v')
+    .exec((err, post)=>{
+        if(err){
+           return res.status(400).json({ 
+                error : 'Post Not found !!!'
+            })
+        }
+       res.json({
+           post
+       })
+    })
+}
+
+exports.getPostsByLimiting = (req,res)=>{
+    const skip = parseInt(req.query.skip)  || 0
+    const limit = parseInt(req.query.limit) || 0
+    console.log(skip)
+    console.log(limit)
+    Post.find()
+    .skip(skip)
+    .limit(limit)
+    .exec((err, post)=>{
+        if(err){
+           return res.status(400).json({
+                err : 'Post cant found!!!'
+            })
+        }
+        res.json({post})
+
+    })
 }
