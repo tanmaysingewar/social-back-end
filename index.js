@@ -36,7 +36,6 @@ const port = process.env.PORT || 8081
 
 //Running post
 app.listen(port, ()=>{
-    console.log('All right just check')
     console.log('SERVER IS RUNNING AT',port)
 })
 
