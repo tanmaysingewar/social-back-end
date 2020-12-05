@@ -51,7 +51,11 @@ exports.createPost = (req,res)=>{
 //*** Getting all post */
 exports.getAllPost = (req,res)=>{
     let sortBy = req.query.sort ? req.query.sort : "_id"
+    const skip = parseInt(req.query.skip)  || 0
+    const limit = parseInt(req.query.limit) || 3
     Post.find()
+    .skip(skip)
+    .limit(limit)
     .populate('author','_id name username')//populating User name username
     .select('-updatedAt -__v -likes.username -comments.comment')
     .sort([[sortBy ,'desc']])
@@ -67,7 +71,6 @@ exports.getAllPost = (req,res)=>{
 
 //**** Getting Post by Id ****/
 exports.getPost = (req,res)=>{
-    
     //Getting post _id 
     const _id = req.post._id
 
@@ -170,7 +173,11 @@ exports.commentPost = (req,res)=>{
 exports.getPostByUserId = (req,res) =>{
     const _uid = req.params.searchUserId
     let sortBy = req.query.sort ? req.query.sort : "_id"
+    const skip = parseInt(req.query.skip)  || 0
+    const limit = parseInt(req.query.limit) || 3
     Post.find({author : _uid})
+    .skip(skip)
+    .limit(limit)
     .select('-comments.comment -updatedAt -__v -likes.username')
     .sort([[sortBy ,'desc']])
     .populate('author','username')
@@ -224,6 +231,8 @@ exports.getCounts = (req,res)=>{
 
 exports.getSavedPost = (req,res) =>{
     const _uid = req.profile._id
+    let skip = parseInt(req.query.skip)  || 0
+    let limit = parseInt(req.query.limit) || 3
     User.findById({_id: _uid})
     .populate({
         path : 'saved.postId',
@@ -239,7 +248,11 @@ exports.getSavedPost = (req,res) =>{
                     err: 'No user found!!!'
                 })
             }
-            const savedPost = user.saved.postId
+           
+            limit = limit + skip
+            console.log(skip, limit)
+            const savedPost = user.saved.postId.slice(skip, limit );
+            console.log(savedPost.length)
             
             res.json({
                 savedPost
@@ -249,7 +262,6 @@ exports.getSavedPost = (req,res) =>{
 
 exports.getAllComments = (req,res)=>{
     const _pid = req.post._id
-    console.log(_pid)
     Post.findById({ _id : _pid})
     .populate('comments.comment.username author', 'username _id')
     .select('-likes.username -updatedAt -__v')
@@ -267,12 +279,11 @@ exports.getAllComments = (req,res)=>{
 
 exports.getPostsByLimiting = (req,res)=>{
     const skip = parseInt(req.query.skip)  || 0
-    const limit = parseInt(req.query.limit) || 0
-    console.log(skip)
-    console.log(limit)
+    const limit = parseInt(req.query.limit) || 3
     Post.find()
     .skip(skip)
     .limit(limit)
+
     .exec((err, post)=>{
         if(err){
            return res.status(400).json({
