@@ -2,7 +2,7 @@ const express = require('express')
 const { check } = require('express-validator')// Express validator 
 const { isSignedIn, isAuthenticated } = require('../controlers/auth')//Authincators
 const { getUserById } = require('../controlers/user')
-const { getPostById,createPost,getPost,removePost,getAllPost,likePost,commentPost,getCounts, getSavedPost , getPostByUserId, checkPostLiked, getAllComments, getPostsByLimiting} = require('../controlers/post')
+const { getPostById,createPost,getPost,removePost,getAllPost,likePost,cardColors,commentPost,getCounts, getSavedPost , getPostByUserId, checkPostLiked, getAllComments, getPostsByLimiting} = require('../controlers/post')
 
 const router = express.Router()
 
@@ -53,6 +53,8 @@ router.post('/post/saved/:userId',isSignedIn,isAuthenticated,getSavedPost)
 router.post('/post/all/comments/:postId',isSignedIn,getAllComments)
 
 router.get('/post',getPostsByLimiting)
+
+router.get('/card/color',cardColors)
 
 //Exporting router
 module.exports = router

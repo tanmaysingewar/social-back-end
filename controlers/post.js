@@ -294,3 +294,28 @@ exports.getPostsByLimiting = (req,res)=>{
 
     })
 }
+
+exports.cardColors =(req,res)=>{
+    let colors = [
+        'linear-gradient(to right, #2980b9, #6dd5fa, #6dd5fa)',
+        'linear-gradient(to right, #ff0099, #493240)',
+        'linear-gradient(to right, #1f4037, #99f2c8)',
+        'linear-gradient(to right, #f953c6, #b91d73)',
+        'linear-gradient(to right, #7f7fd5, #86a8e7, #91eae4)',
+        'linear-gradient(to right, #8360c3, #2ebf91)',
+        'linear-gradient(to right, #009fff, #ec2f4b)',
+        'linear-gradient(to right, #348f50, #56b4d3)',
+        'linear-gradient(to right, #654ea3, #eaafc8)',
+        'linear-gradient(to right, #a8ff78, #78ffd6)',
+        'linear-gradient(to right, #fdc830, #f37335)',
+        'linear-gradient(to right, #ad5389, #3c1053)',
+        'linear-gradient(to right, #da22ff, #9733ee)',
+        'linear-gradient(to right, #02aab0, #00cdac)',
+        'linear-gradient(to right, #00b09b, #96c93d)',
+        'linear-gradient(to right, #fc4a1a, #f7b733)',
+        'linear-gradient(to right, #007991, #78ffd6)',
+        'linear-gradient(to right, #eb5757, #000000)'
+    ]
+
+    res.json(colors)
+}
