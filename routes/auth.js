@@ -1,7 +1,7 @@
 const express = require('express')
 const { check } = require('express-validator')
 const router = express.Router()
-const {singup,singin,singout} = require('../controlers/auth')
+const {singup,singin,singout, isSignedIn, sendOtp, conformId} = require('../controlers/auth')
 
 router.post('/singup',[
     check('name').isLength({min:3 , max:20}).withMessage('name must be at least 3 characture long'),
@@ -15,6 +15,10 @@ router.post('/singin',[
     check('email').isEmail().withMessage('Email is required'),
     check('password').isLength({ min: 5}).withMessage('Password must be at least 3 chars long')
 ],singin)
+
+router.post('/send/otp',isSignedIn,sendOtp)
+
+router.post('/conform/otp',isSignedIn,conformId)
 
 router.get('/singout',singout)
 

@@ -23,7 +23,7 @@ const userSchema = new Schema({
         unique: true,
         trim : true,
         required: true,
-        maxlength:32
+        maxlength: 25
     },
     ency_password:{
         type: String,
@@ -34,6 +34,17 @@ const userSchema = new Schema({
         required :true,
         unique : true
     },
+    conform_id : {
+        type : String,
+        required : true,
+        default : false
+    },
+    verified:{
+        type: Boolean,
+        default: false,
+        required: true
+    }
+    ,
     joines:{count :{
         type : Number,
         default : 0
@@ -60,7 +71,7 @@ const userSchema = new Schema({
         type: String,
         default : 'Hey nice to see you here',
         trim: true,
-        maxlength: 80
+        maxlength: 40
     },
     color:{
         textColor:{
@@ -103,9 +114,9 @@ userSchema.methods = {
             return ''
         }
         try{
-            return crypto.createHmac('sha256', this.salt)
+            return crypto.createHmac(process.env.PASSWORD_SHA, this.salt)
             .update(password)
-            .digest('hex');
+            .digest(process.env.PASSWORD_DIGEST);
         }catch(e){
             return ''
         }

@@ -27,6 +27,16 @@ exports.createPost = (req,res)=>{
             error : 'POST is require'
         })
     }
+    if(post.length > 1000){
+        return res.json({
+            error : 'POST is to long'
+        })
+    }
+    if(postTitle.length > 25){
+        return res.json({
+            error : 'POST Title is to long'
+        })
+    }
     //setting new POST
     const newpost = new Post({
         post,
@@ -36,13 +46,13 @@ exports.createPost = (req,res)=>{
     })
     //saving Post
     newpost.save((err,post)=>{
-        if (err) {
+        if (err || !post ) {
             return res.json({
                 error : 'post not save in DB'
             })
         }
         return res.json({
-            post
+            post : true
         })
     })
 }
@@ -50,17 +60,17 @@ exports.createPost = (req,res)=>{
 
 //*** Getting all post */
 exports.getAllPost = (req,res)=>{
-    let sortBy = req.query.sort ? req.query.sort : "_id"
+    let sortBy = req.query.sort ? req.query.sort : "likes.count"
     const skip = parseInt(req.query.skip)  || 0
-    const limit = parseInt(req.query.limit) || 3
+    const limit = parseInt(req.query.limit) || 6
     Post.find()
     .skip(skip)
     .limit(limit)
-    .populate('author','_id name username')//populating User name username
+    .populate('author','_id name username verified')//populating User name username
     .select('-updatedAt -__v -likes.username -comments.comment')
     .sort([[sortBy ,'desc']])
     .exec((err,post)=>{
-        if (err) {
+        if (err || !post) {
             return res.json({
                 error : 'post not save in DB'
             })
@@ -76,10 +86,10 @@ exports.getPost = (req,res)=>{
 
     //finding POST by id
     Post.find(_id)
-    .populate('author','_id name username')//populating User name username
+    .populate('author','_id name username verified')//populating User name username
     .select('-createdAt -updatedAt -comments')
     .exec((err,post)=>{
-        if (err) {
+        if (err || !post) {
             return res.json({
                 error : 'post not save in DB'
             })
@@ -91,7 +101,7 @@ exports.getPost = (req,res)=>{
 //**** Removing Post ****/
 exports.removePost = (req,res)=>{
     req.post.remove((err,post)=>{
-        if (err) {
+        if (err || !post) {
             return res.json({
                 error : 'Not able to delete Post'
             })
@@ -109,7 +119,7 @@ exports.likePost = (req,res)=>{
     const _uid = req.profile._id
     Post.findById({_id : _pid})
     .exec((err,post)=>{
-        if (err) {
+        if (err || !post) {
             return res.json({
                 error : 'Not able to find Post'
             })
@@ -129,7 +139,7 @@ exports.likePost = (req,res)=>{
         post.likes.username.push(_uid)
         post.likes.count = post.likes.count + 1
         post.save((err,post)=>{
-            if (err) {
+            if (err || !post) {
                 return res.json({
                     error : 'Not able to Save Like'
                 })
@@ -146,7 +156,7 @@ exports.commentPost = (req,res)=>{
     const _uid = req.auth._id
     Post.findById({_id : _pid})
     .exec((err,post)=>{
-        if (err) {
+        if (err || !post) {
             return res.json({
                 error : 'Not able to find Post'
             })
@@ -160,7 +170,7 @@ exports.commentPost = (req,res)=>{
         })
         post.comments.count = post.comments.count + 1
         post.save((err,post)=>{
-            if (err) {
+            if (err || !post) {
                 return res.json({
                     error : 'Not able to Save Comment'
                 })
@@ -180,9 +190,9 @@ exports.getPostByUserId = (req,res) =>{
     .limit(limit)
     .select('-comments.comment -updatedAt -__v -likes.username')
     .sort([[sortBy ,'desc']])
-    .populate('author','username')
+    .populate('author','username verified')
     .exec((err,posts)=>{
-        if (err) {
+        if (err || !posts) {
             return res.json({
                 error : 'Not able to find Post'
             })
@@ -196,7 +206,7 @@ exports.checkPostLiked = (req,res)=>{
     const _uid = req.auth._id
     Post.findById(_pid)
     .exec((err,post)=>{
-        if (err) {
+        if (err || !post) {
             return res.json({
                 error : 'Not able to find Post'
             })
@@ -217,7 +227,7 @@ exports.getCounts = (req,res)=>{
     const _uid = req.profile._id
     Post.find({author : _uid})
     .exec((err, post)=>{
-        if (err) {
+        if (err || !post) {
             return res.json(400).json({
                 err: 'No posts found!!!'
             })
@@ -239,11 +249,11 @@ exports.getSavedPost = (req,res) =>{
         select : '-comments.comment -likes.username -__v',
         populate : {
             path : 'author',
-            select : 'username'
+            select : 'username verified'
         }
     })
         .exec((err, user)=>{
-            if (err) {
+            if (err || !user) {
                 return res.json(400).json({
                     err: 'No user found!!!'
                 })
@@ -263,10 +273,10 @@ exports.getSavedPost = (req,res) =>{
 exports.getAllComments = (req,res)=>{
     const _pid = req.post._id
     Post.findById({ _id : _pid})
-    .populate('comments.comment.username author', 'username _id')
+    .populate('comments.comment.username author', 'username _id verified')
     .select('-likes.username -updatedAt -__v')
     .exec((err, post)=>{
-        if(err){
+        if(err || !post){
            return res.status(400).json({ 
                 error : 'Post Not found !!!'
             })
@@ -283,15 +293,13 @@ exports.getPostsByLimiting = (req,res)=>{
     Post.find()
     .skip(skip)
     .limit(limit)
-
     .exec((err, post)=>{
-        if(err){
+        if(err || !post){
            return res.status(400).json({
                 err : 'Post cant found!!!'
             })
         }
         res.json({post})
-
     })
 }
 
@@ -314,6 +322,7 @@ exports.cardColors =(req,res)=>{
         'linear-gradient(to right, #00b09b, #96c93d)',
         'linear-gradient(to right, #fc4a1a, #f7b733)',
         'linear-gradient(to right, #007991, #78ffd6)',
+        'white',
         'linear-gradient(to right, #eb5757, #000000)'
     ]
 
