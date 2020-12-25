@@ -1,5 +1,16 @@
 const User = require('../modals/user')
 
+var nodemailer = require('nodemailer');
+
+var transporter = nodemailer.createTransport({
+  service: 'Gmail',
+  auth: {
+    user: process.env.PROJECT_EMAIL,
+    name : process.env.PROJECT_EMAIL_NAME,
+    pass: process.env.PROJECT_EMAIL_PASSWORD
+  }
+});
+
 //***** Parem controller *****/
 exports.getUserById = (req,res,next,id)=>{
     User.findById(id)
@@ -313,5 +324,41 @@ exports.topUser = (req,res) => {
             user
         })
 
+    })
+}
+
+exports.review = (req,res) =>{
+    const _uid = req.auth._id
+    const { review } = req.body
+    if(review.replace(/ /g,"") === ''){
+        return res.json({
+            error : 'review is required'
+        })
+    }
+    User.findById({_id :_uid}) 
+    .exec((err, user)=>{
+        if(err) return {
+            error : 'User not found'
+        }
+        console.log(user.email)
+        var mailOptions = {
+            from: `"${user.username}" ${user.email}`,
+            to: 'ficktreecontacts@gmail.com',
+            subject: `Review from ${user.name}`,
+            text: `${review}`
+        };
+        
+        transporter.sendMail(mailOptions, function(error, info){
+            if (error) {
+            console.log(error);
+            } else {
+            console.log('Email sent: ' + info.response);
+            
+            }
+        });
+        res.send({
+            status : 'send'
+        })
+        
     })
 }

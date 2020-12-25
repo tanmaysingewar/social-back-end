@@ -2,7 +2,7 @@ const express = require('express')
 const { isSignedIn, isAuthenticated, isConformend } = require('../controlers/auth')
 const { getPostById } = require('../controlers/post')
 const router = express.Router()
-const {getUserById, getUser, updateUser,serchUser, topUser,removeUser,isjoinUser,joinUser,checkUsername,savePost,isPostSaved} =require('../controlers/user')
+const {getUserById, getUser, updateUser,serchUser, topUser,removeUser,isjoinUser,joinUser,checkUsername,savePost,isPostSaved, review} =require('../controlers/user')
 
 router.param('userId',getUserById)
 
@@ -38,6 +38,8 @@ router.post('/user/check/join/:userId',isSignedIn,isConformend,isjoinUser)
 //top users
 router.post('/user/top/users',isSignedIn,isConformend,topUser)
 
+//review
+router.post('/review',isSignedIn,isConformend,review)
 
 //Exporting router
 module.exports = router

@@ -16,7 +16,7 @@ const userRoutes = require('./routes/user')
 const postRoutes = require('./routes/post')
 
 //Connecting to MONGODB (Locally)
-mongoose.connect( process.env.MONGO_CONN,{
+mongoose.connect( process.env.MONGO_CONN_LOCAL,{
     useCreateIndex :true,
     useUnifiedTopology: true,
     useNewUrlParser: true
