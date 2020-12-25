@@ -33,7 +33,6 @@ exports.singup = (req,res)=>{
     //Saving in DB
     user.save((err, user)=>{
         if (err || !user) {
-            console.log(err)
             // if (err.keyPattern) {
             //     return res.status(402).json({
             //         error : err.keyPattern.username
