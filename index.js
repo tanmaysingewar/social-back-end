@@ -16,7 +16,7 @@ const userRoutes = require('./routes/user')
 const postRoutes = require('./routes/post')
 
 //Connecting to MONGODB (Locally)
-mongoose.connect( 'mongodb+srv://Tanmay:FicktreeTanmay@146@ficktree.bvlsf.mongodb.net/Ficktree?retryWrites=true&w=majority',{
+mongoose.connect( process.env.MONGO_CONN,{
     useCreateIndex :true,
     useUnifiedTopology: true,
     useNewUrlParser: true
